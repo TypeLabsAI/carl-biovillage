@@ -21,7 +21,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Carl — BioVillage</title>
-<meta name="description" content="Talk to Carl about the cosmos. A BioVillage character experience.">
+<meta name="description" content="Talk to Carl about the cosmos. A BioVillage character experience. Discover your cosmic destination.">
 <link href="https://api.fontshare.com/v2/css?f[]=general-sans@400,500,600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
 </head>
@@ -39,6 +39,21 @@
       <h1 class="greeting">Hello traveler.</h1>
       <p class="subtext">You were looking up at the stars.</p>
     </header>
+
+    <!-- Cosmic Destination Card (shown when proto data is present) -->
+    <div id="destination-card" class="destination-card hidden" aria-label="Your cosmic destination">
+      <div class="dest-header">
+        <span class="dest-label">Your Cosmic Destination</span>
+      </div>
+      <div class="dest-body">
+        <span class="dest-emoji"></span>
+        <div class="dest-info">
+          <span class="dest-name"></span>
+          <span class="dest-subtitle"></span>
+        </div>
+      </div>
+      <div class="dest-stats"></div>
+    </div>
 
     <!-- Chat Area -->
     <section class="chat-area" id="chat-area" aria-label="Conversation with Carl" role="log" aria-live="polite">
