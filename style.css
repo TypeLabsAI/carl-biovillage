@@ -1,0 +1,339 @@
+/* ============================================
+   Carl — BioVillage Character System
+   Deep indigo cosmos, pixel aesthetic
+   ============================================ */
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --bg-deep: #0a0a1a;
+  --bg-surface: rgba(12, 12, 32, 0.85);
+  --bg-input: rgba(18, 18, 44, 0.9);
+  --border-subtle: rgba(100, 120, 180, 0.15);
+  --border-focus: rgba(140, 170, 255, 0.35);
+  --text-primary: #d4d8f0;
+  --text-muted: #7a7f9e;
+  --text-faint: #4a4e6a;
+  --accent: #8ba4e8;
+  --accent-dim: rgba(139, 164, 232, 0.12);
+  --carl-text: #c8cce8;
+  --user-text: #a0b4e0;
+  --user-bubble: rgba(70, 90, 140, 0.2);
+  --font-body: 'General Sans', -apple-system, sans-serif;
+  --transition-fast: 180ms cubic-bezier(0.16, 1, 0.3, 1);
+  --radius-sm: 0.375rem;
+  --radius-md: 0.625rem;
+  --radius-lg: 1rem;
+}
+
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  scroll-behavior: smooth;
+}
+
+body {
+  min-height: 100dvh;
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--text-primary);
+  background: var(--bg-deep);
+  overflow: hidden;
+}
+
+/* ---- Starfield Canvas ---- */
+#starfield {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* ---- Main Layout ---- */
+#app {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 520px;
+  margin: 0 auto;
+  padding: 2rem 1.25rem 1rem;
+  height: 100dvh;
+}
+
+/* ---- Pixel Avatar ---- */
+.avatar-container {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1rem;
+}
+
+#carl-avatar {
+  width: 80px;
+  height: 80px;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  border-radius: var(--radius-md);
+  border: 2px solid var(--border-subtle);
+  background: rgba(15, 15, 35, 0.6);
+}
+
+/* ---- Header ---- */
+.carl-header {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.greeting {
+  font-size: 1.375rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  letter-spacing: -0.01em;
+  line-height: 1.3;
+  margin-bottom: 0.25rem;
+}
+
+.subtext {
+  font-size: 0.8125rem;
+  color: var(--text-muted);
+  font-weight: 400;
+}
+
+/* ---- Chat Area ---- */
+.chat-area {
+  flex: 1;
+  width: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 0.5rem 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(100, 120, 180, 0.15) transparent;
+  mask-image: linear-gradient(to bottom, transparent 0%, black 3%, black 97%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 3%, black 97%, transparent 100%);
+}
+
+.chat-area::-webkit-scrollbar {
+  width: 4px;
+}
+.chat-area::-webkit-scrollbar-track {
+  background: transparent;
+}
+.chat-area::-webkit-scrollbar-thumb {
+  background: rgba(100, 120, 180, 0.2);
+  border-radius: 2px;
+}
+
+/* ---- Message Bubbles ---- */
+.message {
+  max-width: 92%;
+  animation: msg-enter 400ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.message-user {
+  align-self: flex-end;
+  background: var(--user-bubble);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg) var(--radius-lg) var(--radius-sm) var(--radius-lg);
+  padding: 0.625rem 0.875rem;
+  color: var(--user-text);
+  font-size: 0.875rem;
+}
+
+.message-carl {
+  align-self: flex-start;
+  padding: 0.375rem 0;
+}
+
+.message-carl .carl-name {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  color: var(--accent);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  margin-bottom: 0.25rem;
+}
+
+.message-carl .carl-text {
+  font-size: 0.9375rem;
+  color: var(--carl-text);
+  line-height: 1.65;
+  white-space: pre-wrap;
+}
+
+/* Cursor blink during streaming */
+.carl-text.streaming::after {
+  content: "▍";
+  color: var(--accent);
+  animation: blink 1s step-end infinite;
+  font-weight: 300;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+@keyframes msg-enter {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ---- Input Area ---- */
+.input-area {
+  width: 100%;
+  display: flex;
+  gap: 0.5rem;
+  padding: 0.75rem 0;
+  flex-shrink: 0;
+}
+
+#chat-input {
+  flex: 1;
+  padding: 0.625rem 0.875rem;
+  font-size: 0.875rem;
+  font-family: var(--font-body);
+  color: var(--text-primary);
+  background: var(--bg-input);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  outline: none;
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+#chat-input::placeholder {
+  color: var(--text-faint);
+}
+
+#chat-input:focus {
+  border-color: var(--border-focus);
+  box-shadow: 0 0 0 3px rgba(139, 164, 232, 0.08);
+}
+
+#send-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  background: var(--accent-dim);
+  color: var(--accent);
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background var(--transition-fast), border-color var(--transition-fast), transform var(--transition-fast);
+}
+
+#send-btn:hover {
+  background: rgba(139, 164, 232, 0.2);
+  border-color: var(--border-focus);
+}
+
+#send-btn:active {
+  transform: scale(0.95);
+}
+
+#send-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* ---- Back Link ---- */
+.back-link {
+  padding: 0.5rem 0 0.25rem;
+  flex-shrink: 0;
+}
+
+.back-link a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: 0.75rem;
+  color: var(--text-faint);
+  text-decoration: none;
+  transition: color var(--transition-fast);
+}
+
+.back-link a:hover {
+  color: var(--text-muted);
+}
+
+/* ---- Attribution ---- */
+.attribution {
+  text-align: center;
+  padding: 0 0 0.5rem;
+  flex-shrink: 0;
+}
+
+.attribution a {
+  font-size: 0.625rem;
+  color: var(--text-faint);
+  text-decoration: none;
+  opacity: 0.4;
+  transition: opacity var(--transition-fast);
+}
+
+.attribution a:hover {
+  opacity: 0.7;
+}
+
+/* ---- Focus Visible ---- */
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+/* ---- Selection ---- */
+::selection {
+  background: rgba(139, 164, 232, 0.25);
+  color: var(--text-primary);
+}
+
+/* ---- Reduced Motion ---- */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ---- Mobile ---- */
+@media (max-width: 480px) {
+  #app {
+    padding: 1.25rem 1rem 0.75rem;
+  }
+
+  .greeting {
+    font-size: 1.25rem;
+  }
+
+  .carl-header {
+    margin-bottom: 1rem;
+  }
+
+  #carl-avatar {
+    width: 64px;
+    height: 64px;
+  }
+}
