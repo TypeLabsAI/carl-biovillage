@@ -42,9 +42,17 @@
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
+  <!-- Loading Screen -->
+  <div id="loading-screen">
+    <div class="loading-content">
+      <div class="loading-text">Loading<span class="loading-dots"></span></div>
+      <button id="proceed-btn" class="proceed-btn hidden">Proceed</button>
+    </div>
+  </div>
+
   <canvas id="starfield" aria-hidden="true"></canvas>
 
-  <main id="app">
+  <main id="app" class="hidden">
     <!-- Carl Billboard -->
     <div class="billboard-container">
       <img src="carl-billboard.jpg" alt="Carl's Billboard — Don't forget, no billboards in space. Love, Carl" class="carl-billboard" />
@@ -112,5 +120,6 @@
   <script src="starfield.js"></script>
   <script src="chat.js"></script>
   <script src="music.js"></script>
+  <script src="loader.js"></script>
 </body>
 </html>

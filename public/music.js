@@ -1,15 +1,16 @@
 /**
  * BK Music — Carl's Ambient Layer
  * K. Leimer "Almost Chinese" seamless loop
- * Auto-starts on first user interaction, fades in gently.
+ * Exposes window.startMusic() — called by loader.js on Proceed click.
  */
 (function () {
   const TRACK_URL = 'almost-chinese-loop.mp3';
   const FADE_IN_MS = 3000;
-  const TARGET_VOLUME = 0.25; // calm ambient level (idle/meditation range)
-  const FADE_STEP = 20; // ms per volume step
+  const TARGET_VOLUME = 0.25;
+  const FADE_STEP = 20;
 
-  let ctx, gainNode, source, buffer;
+  let ctx, gainNode, source;
+  let buffer = null;
   let started = false;
   let loaded = false;
 
@@ -17,27 +18,28 @@
   async function loadTrack() {
     try {
       const res = await fetch(TRACK_URL);
-      const arrayBuf = await res.arrayBuffer();
-      // Don't decode until we have a context (needs user gesture)
-      buffer = arrayBuf;
+      buffer = await res.arrayBuffer();
       loaded = true;
+      // Signal that audio is ready
+      window.dispatchEvent(new Event('bk-music-ready'));
     } catch (e) {
       console.warn('[BK Music] Failed to load track:', e);
+      // Still signal ready so the UI isn't stuck
+      window.dispatchEvent(new Event('bk-music-ready'));
     }
   }
 
   async function startPlayback() {
-    if (started) return;
+    if (started || !loaded || !buffer) return;
     started = true;
 
     try {
       ctx = new (window.AudioContext || window.webkitAudioContext)();
       gainNode = ctx.createGain();
-      gainNode.gain.value = 0; // start silent
+      gainNode.gain.value = 0;
       gainNode.connect(ctx.destination);
 
-      // Decode the pre-fetched buffer
-      const audioBuf = await ctx.decodeAudioData(buffer.slice(0)); // slice to avoid detached buffer
+      const audioBuf = await ctx.decodeAudioData(buffer.slice(0));
       
       source = ctx.createBufferSource();
       source.buffer = audioBuf;
@@ -63,27 +65,16 @@
     }
   }
 
-  // Start on first interaction (matches village behavior)
-  function onInteraction() {
-    if (!loaded || started) return;
-    startPlayback();
-    // Keep listeners for resume after tab switch
-  }
-
-  // Handle visibility changes — pause/resume
+  // Handle visibility changes
   document.addEventListener('visibilitychange', () => {
     if (!ctx) return;
-    if (document.hidden) {
-      ctx.suspend();
-    } else {
-      ctx.resume();
-    }
+    if (document.hidden) ctx.suspend();
+    else ctx.resume();
   });
 
-  // Listen for any user interaction
-  ['click', 'keydown', 'touchstart'].forEach(evt => {
-    document.addEventListener(evt, onInteraction, { once: false, passive: true });
-  });
+  // Expose globally for loader.js
+  window.startMusic = startPlayback;
+  window.isMusicLoaded = () => loaded;
 
   // Start loading immediately
   loadTrack();

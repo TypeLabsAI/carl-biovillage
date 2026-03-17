@@ -47,6 +47,88 @@ body {
   overflow: hidden;
 }
 
+/* ---- Loading Screen ---- */
+#loading-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-deep);
+  transition: opacity 600ms ease, visibility 600ms ease;
+}
+
+#loading-screen.fade-out {
+  opacity: 0;
+  visibility: hidden;
+}
+
+.loading-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2rem;
+}
+
+.loading-text {
+  font-family: var(--font-body);
+  font-size: 1.125rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  letter-spacing: 0.08em;
+}
+
+.loading-dots::after {
+  content: '';
+  animation: dots 1.5s steps(4, end) infinite;
+}
+
+@keyframes dots {
+  0%   { content: ''; }
+  25%  { content: '.'; }
+  50%  { content: '..'; }
+  75%  { content: '...'; }
+  100% { content: ''; }
+}
+
+.proceed-btn {
+  font-family: var(--font-body);
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  background: rgba(139, 164, 232, 0.1);
+  border: 1px solid rgba(139, 164, 232, 0.25);
+  border-radius: var(--radius-md);
+  padding: 0.625rem 2rem;
+  cursor: pointer;
+  letter-spacing: 0.04em;
+  transition: background 250ms ease, border-color 250ms ease, transform 150ms ease, opacity 500ms ease;
+  opacity: 0;
+}
+
+.proceed-btn:not(.hidden) {
+  opacity: 1;
+}
+
+.proceed-btn:hover {
+  background: rgba(139, 164, 232, 0.2);
+  border-color: rgba(139, 164, 232, 0.4);
+}
+
+.proceed-btn:active {
+  transform: scale(0.97);
+}
+
+#app.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+#app {
+  transition: opacity 600ms ease;
+}
+
 /* ---- Starfield Canvas ---- */
 #starfield {
   position: fixed;
